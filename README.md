@@ -26,6 +26,14 @@ serialize({ "a": [ { "b": "c" }, { "d": "e" } ] })
 
 Note that spaces are not encoded. For use in urls, you may want `%20`—this may be accomplished using `encodeURIComponent()`.
 
+## Installation
+
+Install [`friendly-serializer`](https://www.npmjs.com/package/friendly-serializer) from npm.
+
+```
+npm install friendly-serializer
+```
+
 ## Usage
     
 ```javascript
