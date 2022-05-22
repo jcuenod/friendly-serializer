@@ -1,32 +1,29 @@
-
-// List the entire space of the object, separating each property with "&"
-// The prop name will be the sum of the parent keys separated by "."
-const serialize = (obj, keyName = "") =>
+const serialize = (obj, namespace = "") =>
     Object.keys(obj).map((key) => {
+        const newNamespace = namespace ? `${namespace}.${key}` : key
         const value = obj[key]
         if (typeof value === "object") {
-            return serialize(value, `${keyName}.${key}`)
+            return serialize(value, `${newNamespace}`)
         }
-        return `${keyName}.${key}=${value}`
+        return `${newNamespace}=${encodeURIComponent(value)}`
     }).join("&")
 
-// Convert objects that have numeric keys to an arrays recursively
-const convert = (obj) => {
+const _convertObjectsWithNumericKeysToArrays = (obj) => {
     if (typeof obj !== "object") {
         return obj
     }
-    const isArray = Object.keys(obj).every((key) => !isNaN(parseInt(key)))
+    const keys = Object.keys(obj)
+    const isArray = keys.every(k => !isNaN(parseInt(k)))
     return isArray
-        ? Object.keys(obj).map((key) => convert(obj[key]))
-        : Object.keys(obj).reduce((acc, key) => {
-            acc[key] = convert(obj[key])
+        ? keys.map(k => _convertObjectsWithNumericKeysToArrays(obj[k]))
+        : keys.reduce((acc, k) => {
+            acc[k] = _convertObjectsWithNumericKeysToArrays(obj[k])
             return acc
         }, {})
 }
-const deserialize = (str) => {
+const _deserialize = kvPairs => {
     const obj = {}
-    str.split("&").forEach((item) => {
-        const [key, value] = item.split("=")
+    kvPairs.forEach(([key, value]) => {
         const keys = key.split(".")
         const lastKey = keys.pop()
         const parent = keys.reduce((acc, key) => {
@@ -35,10 +32,21 @@ const deserialize = (str) => {
         }, obj)
         parent[lastKey] = value
     })
-    return convert(obj)
+    return _convertObjectsWithNumericKeysToArrays(obj)
+}
+
+const deserialize = str => {
+    return _deserialize(str.split("&")
+        .map(item => item.split("="))
+        .map(([k, v]) => [k, decodeURIComponent(v)])
+    )
+}
+const convertDeserializedQueryObject = obj => {
+    return _deserialize(Object.entries(obj))
 }
 
 module.exports = {
     serialize,
-    deserialize
+    deserialize,
+    convertDeserializedQueryObject,
 }
