@@ -103,3 +103,7 @@ const handleGet = async (req, res) => {
     // }
 }
 ```
+
+## Similar Projects
+
+- [friendly-querystring](https://www.npmjs.com/package/friendly-querystring)
