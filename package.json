@@ -3,6 +3,10 @@
   "version": "0.0.2",
   "description": "Serialize and deserialize js objects in verbose (but friendly) form.",
   "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jcuenod/friendly-serializer.git"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
